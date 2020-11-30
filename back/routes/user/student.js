@@ -35,19 +35,40 @@ router.get("/class_list", async ctx => {//
 //绑定班级
 router.get("/bind_class", async ctx => {
     let {
-        classesId
+        classesId,
+        data_id
     } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
-    let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
-    if (creator) {
+    let user = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
+    if (user) {
+        _id = user._id;
+    }
+
+    if (user || result) {
         let user = await User.findOne({
-            _id: creator.id
+            _id: _id
         }).then((doc) => {
             return doc;
         })
         if (user.password == creator.password && user.role == 0) {
             let data = await User.findOneAndUpdate({
-                _id: creator.id
+                _id: _id
             }, {
                 classesId
             }, {
@@ -79,18 +100,43 @@ router.get("/bind_class", async ctx => {
 });
 
 //查看课表
+// /user/student/get_timetable
 router.get("/get_timetable", async ctx => {
-    let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
+    let {
+        data_id
+    } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    let creator = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
     if (creator) {
+        _id = creator._id;
+    }
+
+    if (creator || result) {
+
         let user = await User.findOne({
-            _id: creator.id
+            _id: _id
         }).then((doc) => {
             return doc;
         })
-        if (user.password == creator.password && user.role == 0) {
+        if (user.password == result.password && user.role == 0) {
             let data = await Classes.findById({
-                _id: creator.classesId
+                _id: result.classesId
             }).then((doc) => {
                 return doc;
             })
@@ -137,17 +183,43 @@ router.get("/school_memo", async ctx => {
 
 //联系老师
 router.get("/get_teacher_phone", async ctx => {
+    //console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    //let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
+    let {
+        data_id
+    } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
-    let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
+    let creator = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
     if (creator) {
+        _id = creator._id;
+    }
+
+
+    if (result || creator) {
         let user = await User.findOne({
-            _id: creator.id
+            _id: _id
         }).then((doc) => {
             return doc;
         })
-        if (user.password == creator.password && user.role == 0) {
+        if (user.password == result.password && user.role == 0) {
             let data = await Classes.findById({
-                _id: creator.classesId
+                _id: result.classesId
             }).then((doc) => {
                 return doc;
             })
@@ -219,6 +291,7 @@ router.get("/learning_detail", async ctx => {
 });
 
 //校园活动
+// /user/student/action_list
 router.get("/action_list", async ctx => {//
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let list = await Action.find({}).sort({
@@ -262,28 +335,49 @@ router.get("/action_detail", async ctx => {
 router.get("/declaration", async ctx => {
     let {
         temperature,
-        is_cough
+        is_cough,
+        data_id
     } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
-    let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
+    let creator = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
     if (creator) {
+        _id = creator._id;
+    }
+
+    if (creator || result) {
         let user = await User.findOne({
-            _id: creator.id
+            _id: _id
         }).then((doc) => {
             return doc;
         })
-        if (user.password == creator.password && user.role == 0) {
+        if (user.password == result.password && result.role == 0) {
             let classes = await Classes.findById({
-                _id: creator.classesId
+                _id: result.classesId
             }).then(doc => {
                 return doc;
             });
             let professional = classes.faculty + classes.professional + classes.name;
 
             let health = await new Health({
-                name: creator.nickname,
+                name: result.nickname,
                 created_time: moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'),
-                userid: creator.id,
+                userid: result.id,
                 temperature,
                 is_cough,
                 professional: professional,
@@ -319,17 +413,40 @@ router.get("/declaration", async ctx => {
 
 //健康申报记录
 router.get("/declaration_list", async ctx => {
-    let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
+    let {
+        data_id
+    } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    let creator = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
     if (creator) {
+        _id = creator._id;
+    }
+
+    if (creator || result) {
         let user = await User.findOne({
-            _id: creator.id
+            _id: result.id
         }).then((doc) => {
             return doc;
         })
-        if (user.password == creator.password && user.role == 0) {
+        if (user.password == result.password && user.role == 0) {
             let data = await Health.find({
-                userid: creator.id
+                userid: result.id
             }).then((doc) => {
                 return doc;
             })

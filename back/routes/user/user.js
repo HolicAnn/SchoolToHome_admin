@@ -29,7 +29,7 @@ router.get("/register", async (ctx, next) => {
         });
     }
     */
-   console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let pwdReg = /^[0-9a-zA-Z]{8,}$/;
     if (!pwdReg.test(password)) {
         return (ctx.body = {
@@ -187,7 +187,7 @@ router.get("/resetpwd", async (ctx, next) => {
     let {
         phone,
         newpwd,
-        codes
+        codes,
     } = ctx.request.query;
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let phoneReg = /^1[3|4|5|7|8]\d{9}$/;
@@ -279,11 +279,34 @@ router.get("/changepasswd", async (ctx, next) => {
     let {
         id,
         password,
-        newpwd
+        newpwd,
+        data_id
     } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let user = await getUserInfo(ctx, jstSecret, "reader");
-    if (user._id != id) {
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
+    if (user) {
+        _id = user._id;
+    }
+
+    //console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    //let user = await getUserInfo(ctx, jstSecret, "reader");
+    if (_id != id) {
         return (ctx.body = {
             state: 201,
             msg: "无权限"
@@ -295,7 +318,7 @@ router.get("/changepasswd", async (ctx, next) => {
     var str = md5.digest("hex");
     var pwd = str.toUpperCase();
 
-    let ji = await User.findById(id).then(doc => {
+    let ji = await User.findById(_id).then(doc => {
         return doc;
     });
     if (ji.password == pwd) {
@@ -369,12 +392,34 @@ router.get("/login", async ctx => {
 //用户详情
 //get  http://ip:8888/user/user/detail
 router.get("/detail", async ctx => {
-    //console.log(ctx);
+    let {
+        data_id
+    } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let user = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
     if (user) {
+        _id = user._id;
+    }
+
+    if (user || result) {
         let data = await User.findById({
-            _id: user._id
+            _id
         }).then((doc) => {
             return doc;
         })
@@ -398,12 +443,33 @@ router.get("/detail", async ctx => {
 router.get("/edit", async ctx => {
     let {
         nickname,
-        memo
+        memo,
+        data_id
     } = ctx.request.query;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let user = await getUserInfo(ctx, jstSecret, "reader");
-    if (user._id) {
-        let ji = await User.findByIdAndUpdate(user.id, {
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
+    if (user) {
+        _id = user._id;
+    }
+
+    if (user || result) {
+        let ji = await User.findByIdAndUpdate(_id, {
             nickname: nickname,
             memo: memo
         }, {
@@ -441,15 +507,36 @@ router.get("/logout", async (ctx, next) => {
 //post  http://ip:8888/user/user/upload?path=本地图片地址
 router.get("/upload", async (ctx, next) => {
     let {
-        path //文件路径
+        path, //文件路径
+        data_id
     } = ctx.request.query;//.files.filepath;
+
+    let result;
+    if (data_id) {
+        result = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+    }
+
+    console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
-    //console.log(ctx.request.files.filepath)
-    let creator = await getUserInfo(ctx, jstSecret, "reader");
-    if (creator) {
+    let user = await getUserInfo(ctx, jstSecret, "reader");
+
+    let _id = "";
+    if (result) {
+        _id = data_id;
+    }
+    if (user) {
+        _id = user._id;
+    }
+
+
+    if (user || result) {
         let user = await User.findOne({
             username: creator.username,
-            _id: creator._id
+            _id
         }).then((doc) => {
             return doc;
         })
@@ -532,4 +619,22 @@ router.get("/about", async ctx => {
         filepath: "https://img.zcool.cn/community/016752575784a50000012e7e5b659a.jpg@1280w_1l_2o_100sh.jpg"
     });
 });
+
+//获取账号加密token
+/*
+let x = "17314985112" + "123456";
+console.log(x);
+var md5 = crypto.createHash("md5");
+md5.update(x);
+var str = md5.digest("hex");
+var pwd = str.toUpperCase();
+console.log(pwd);
+*/
+
+let result;
+if (result) {
+    console.log("1");
+} else
+    console.log("0");
+
 module.exports = router
