@@ -29,6 +29,12 @@ var schema = mongoose.Schema({
     },
     classesId: {
         type: String,
+    },
+    sex:{
+        type:String,
+    },
+    XH:{
+        type:String,
     }
 
 }, {

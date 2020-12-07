@@ -18,7 +18,8 @@ router.get("/register", async (ctx, next) => {
         phone,//username
         password,
         nickname,
-        codes,//验证码
+        codes,//验证码,
+        classesId
     } = ctx.request.query;
     /*
     let phoneReg = /^1[3|4|5|7|8]\d{9}$/;
@@ -80,7 +81,9 @@ router.get("/register", async (ctx, next) => {
                 password: pwd,
                 role: 0,
                 created_time: moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'),
-                nickname
+                nickname,
+                classesId,
+                XH: Number.parseInt(Math.random() * 1000000000)
             });
 
             let data = await user.save().then(doc => {
@@ -440,37 +443,21 @@ router.get("/detail", async ctx => {
 
 //编辑资料（昵称，签名）
 //post  http://ip:8888/user/user/edit?nickname=昵称&memo=签名
-router.get("/edit", async ctx => {
+router.get("/edit_memo", async ctx => {
     let {
-        nickname,
         memo,
         data_id
     } = ctx.request.query;
+    let _id = data_id;
 
-    let result;
-    if (data_id) {
-        result = await User.findById({
-            _id: data_id
-        }).then((doc) => {
-            return doc;
-        });
-    }
+    let result = await User.findById({
+        _id
+    }).then((doc) => {
+        return doc;
+    });
 
-    console.log(ctx);
-    console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
-    let user = await getUserInfo(ctx, jstSecret, "reader");
-
-    let _id = "";
     if (result) {
-        _id = data_id;
-    }
-    if (user) {
-        _id = user._id;
-    }
-
-    if (user || result) {
-        let ji = await User.findByIdAndUpdate(_id, {
-            nickname: nickname,
+        let ji = await User.findByIdAndUpdate({ _id }, {
             memo: memo
         }, {
             upsert: true
@@ -480,6 +467,47 @@ router.get("/edit", async ctx => {
                 state: 200,
                 msg: "编辑成功",
                 data: ji
+            });
+        }
+    } else {
+        return (ctx.body = {
+            state: 201,
+            msg: "权限错误，请切换用户"
+        });
+    }
+
+});
+
+//编辑资料（昵称，签名）
+//post  http://ip:8888/user/user/edit?nickname=昵称&memo=签名
+router.get("/edit_nickname", async ctx => {
+    let {
+        nickname,
+        data_id
+    } = ctx.request.query;
+
+    let result = await User.findById({
+        _id: data_id
+    }).then((doc) => {
+        return doc;
+    });
+
+    if (result) {
+        let ji = await User.findByIdAndUpdate({ _id: result._id }, {
+            nickname: nickname,
+        }, {
+            upsert: true
+        });
+        let data = await User.findById({
+            _id: data_id
+        }).then((doc) => {
+            return doc;
+        });
+        if (ji) {
+            return (ctx.body = {
+                state: 200,
+                msg: "编辑成功",
+                data: data
             });
         }
     } else {
@@ -630,11 +658,5 @@ var str = md5.digest("hex");
 var pwd = str.toUpperCase();
 console.log(pwd);
 */
-
-let result;
-if (result) {
-    console.log("1");
-} else
-    console.log("0");
 
 module.exports = router

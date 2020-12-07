@@ -13,6 +13,15 @@ var schema = mongoose.Schema({
     },
     memo: {//活动介绍
         type: String,
+    },
+    author: {//作者
+        type: String
+    },
+    professional: {//专业
+        type: String
+    },
+    hot: {//热度值
+        type: String
     }
 }, {
     versionKey: false //版本号不更新

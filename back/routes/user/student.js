@@ -18,6 +18,7 @@ const {
 */
 
 //获取班级列表
+//  /user/student/class_list
 router.get("/class_list", async ctx => {//
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let list = await Classes.find({}).sort({
@@ -33,6 +34,7 @@ router.get("/class_list", async ctx => {//
 });
 
 //绑定班级
+//  /user/student/bind_class?classesId&data_id
 router.get("/bind_class", async ctx => {
     let {
         classesId,
@@ -182,6 +184,7 @@ router.get("/school_memo", async ctx => {
 });
 
 //联系老师
+// /user/student/get_teacher_phone
 router.get("/get_teacher_phone", async ctx => {
     //console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     //let creator = await getUserInfo(ctx, jstSecret, "reader"); //获取token
@@ -295,7 +298,7 @@ router.get("/learning_detail", async ctx => {
 router.get("/action_list", async ctx => {//
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let list = await Action.find({}).sort({
-        created_time: -1
+        hot: -1
     }).then((doc) => {
         return doc;
     })
