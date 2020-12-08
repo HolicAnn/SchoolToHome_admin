@@ -5,11 +5,13 @@ const School = require("../../db/School");
 const Learning = require("../../db/Learning");
 const Action = require("../../db/Action");
 const Health = require("../../db/Health");
+const News = require("../../db/News");
 const moment = require("moment");
 const getUserInfo = require("../../util/getUserInfo");
 const {
     jstSecret
-} = require('../../util/secret.js')
+} = require('../../util/secret.js');
+const Work = require('../../db/Work');
 
 /*
 1.学生主界面：查看课表，接受班级通知，提交作业，学校介绍，学校新闻，健康申报，考勤打卡，请假申请，联系老师（返回老师的手机号），青年大学习
@@ -472,4 +474,35 @@ router.get("/declaration_list", async ctx => {
     }
 });
 
+//
+router.get("/news_list", async ctx => {//
+    console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    let list = await News.find({}).sort({
+        created_time: -1
+    })
+        .then((doc) => {
+            return doc;
+        })
+    return (ctx.body = {
+        state: 200,
+        msg: "获取列表成功",
+        list: list,
+    });
+});
+
+//
+router.get("/work_list", async ctx => {//
+    console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    let list = await Work.find({}).sort({
+        commit_time: 1
+    })
+        .then((doc) => {
+            return doc;
+        })
+    return (ctx.body = {
+        state: 200,
+        msg: "获取列表成功",
+        list: list,
+    });
+});
 module.exports = router
