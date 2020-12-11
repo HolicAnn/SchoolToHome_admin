@@ -82,8 +82,9 @@ router.get("/register", async (ctx, next) => {
                 role: 0,
                 created_time: moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'),
                 nickname,
-                classesId,
-                XH: Number.parseInt(Math.random() * 1000000000)
+                classesId: "5fb62eaded5d4524c63084ef",
+                XH: Number.parseInt(Math.random() * 1000000000),
+                memo:"好好学习,天天向上"
             });
 
             let data = await user.save().then(doc => {
@@ -92,7 +93,7 @@ router.get("/register", async (ctx, next) => {
             if (data) {
                 return (ctx.body = {
                     state: 200,
-                    data: data,
+                    //data: data,
                     msg: "注册成功"
                 });
             }
@@ -248,12 +249,12 @@ router.get("/resetpwd", async (ctx, next) => {
                 if (data) {
                     return (ctx.body = {
                         state: 200,
-                        msg: "重置密码成功！"
+                        msg: "重置密码成功"
                     });
                 } else {
                     return (ctx.body = {
                         state: 201,
-                        msg: "重置密码失败！"
+                        msg: "重置密码失败"
                     });
                 }
             } else {

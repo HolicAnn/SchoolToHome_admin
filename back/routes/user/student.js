@@ -490,6 +490,31 @@ router.get("/news_list", async ctx => {//
     });
 });
 
+router.get("/news_detail", async ctx => {//
+    console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    let {
+        id
+    } = ctx.request.query;
+    console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
+    let data = await News.findOne({
+        _id: id
+    }).then((doc) => {
+        return doc;
+    })
+    if (data) {
+        return ctx.body = {
+            state: 200,
+            data: data,
+            msg: "查询成功"
+        }
+    } else {
+        return ctx.body = {
+            state: 201,
+            msg: "错误，该通知不存在",
+        }
+    }
+});
+
 //
 router.get("/work_list", async ctx => {//
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
