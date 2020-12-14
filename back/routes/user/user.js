@@ -408,8 +408,7 @@ router.get("/detail", async ctx => {
             return doc;
         });
     }
-
-    console.log(ctx);
+    //console.log(ctx);
     console.log(moment(Number.parseInt(Date.now())).format('YYYY-MM-DD HH:mm'));
     let user = await getUserInfo(ctx, jstSecret, "reader");
 
