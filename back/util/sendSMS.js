@@ -1,5 +1,7 @@
 const Core = require('@alicloud/pop-core')
 const moment = require('moment')
+const accessKeyI = ""
+const secretAccessKey = ""
 class sendSMS {
   constructor(phone, TemplateCode, signName = "言柒教育") {
     this.phone = phone;
