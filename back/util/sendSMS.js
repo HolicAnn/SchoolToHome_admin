@@ -1,9 +1,5 @@
 const Core = require('@alicloud/pop-core')
-const accessKeyId = 'LTAI4FhnbkSECCTe8gFqxKJ8'
-const secretAccessKey = 'jZhcXH0iK6kY8oYcYrvUpZIUljEbAJ'
 const moment = require('moment')
-//重置密码模板SMS_180045543
-//注册验证模板SMS_180055577
 class sendSMS {
   constructor(phone, TemplateCode, signName = "言柒教育") {
     this.phone = phone;
